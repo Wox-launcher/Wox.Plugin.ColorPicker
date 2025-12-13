@@ -1,14 +1,32 @@
 {
-  "Id": "[Id]",
-  "TriggerKeywords": ["[Trigger Keyword]"],
-  "Name": "[Name]",
-  "Description": "[Description]",
-  "Author": "[Author Name]",
+  "Id": "9014abc5-7a57-46c4-8961-abf3d8f1b008",
+  "TriggerKeywords": ["color"],
+  "Commands": [
+    {
+      "Command":"pick",
+      "Description":"Pick a color from the screen"
+    }
+  ],
+  "Name": "Color Picker",
+  "Description": "Wox plugin to pick colors",
+  "Author": "Wox-Launcher",
   "Version": "0.0.1",
   "MinWoxVersion": "2.0.0",
   "Runtime": "nodejs",
-  "Website": "[Website]",
+  "Website": "https://github.com/Wox-launcher/Wox.Plugin.ColorPicker",
   "Entry": "index.js",
   "Icon": "relative:images/app.png",
-  "SupportedOS": ["windows", "linux", "darwin"]
+  "SupportedOS": ["windows", "darwin"],
+  "Features": [
+    {
+      "Name": "gridLayout",
+      "Params": {
+        "Columns": 6,
+        "ItemPadding": 8,
+        "ItemMargin": 8,
+        "ShowTitle": true,
+        "Commands": "!pick"
+      }
+    }
+  ]
 }
