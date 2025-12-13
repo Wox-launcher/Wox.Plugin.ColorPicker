@@ -3,12 +3,12 @@
   "TriggerKeywords": ["color"],
   "Commands": [
     {
-      "Command":"pick",
-      "Description":"Pick a color from the screen"
+      "Command": "pick",
+      "Description": "i18n:command_pick_desc"
     }
   ],
-  "Name": "Color Picker",
-  "Description": "Wox plugin to pick colors",
+  "Name": "i18n:plugin_name",
+  "Description": "i18n:plugin_desc",
   "Author": "Wox-Launcher",
   "Version": "0.0.1",
   "MinWoxVersion": "2.0.0",
@@ -28,5 +28,77 @@
         "Commands": "!pick"
       }
     }
-  ]
+  ],
+  "I18n": {
+    "en_US": {
+      "plugin_name": "Color Picker",
+      "plugin_desc": "Wox plugin to pick colors",
+      "command_pick_desc": "Pick a color from the screen",
+
+      "group_favorites": "Favorites",
+      "group_history": "History",
+
+      "result_pick_title": "Pick a color from screen",
+      "result_pick_subtitle": "Press Enter to pick",
+      "action_pick_color": "Pick Color",
+
+      "action_copy": "Copy",
+      "action_favorite": "Favorite",
+      "action_unfavorite": "Unfavorite",
+      "action_edit_keywords": "Edit Keywords",
+      "action_remove_history": "Remove from History",
+
+      "keyword_label": "Keywords",
+      "keyword_tooltip": "Comma separated keywords for search (e.g. red, primary)",
+
+      "subtitle_click_copy": "Click to copy",
+      "subtitle_keywords_prefix": "Keywords: ",
+
+      "empty_no_match": "No matching colors",
+      "empty_no_colors": "No colors yet",
+      "empty_pick_hint": "Use 'color pick' to pick a color from screen",
+
+      "unknown_command_prefix": "Unknown command: ",
+      "unknown_command_hint": "Try 'color pick' or just 'color'",
+
+      "notify_copied_prefix": "Copied: ",
+      "notify_picked_prefix": "Picked color: ",
+      "notify_copy_failed_prefix": "Copy failed: "
+    },
+    "zh_CN": {
+      "plugin_name": "取色器",
+      "plugin_desc": "用于取色的 Wox 插件",
+      "command_pick_desc": "从屏幕取一个颜色",
+
+      "group_favorites": "收藏",
+      "group_history": "历史",
+
+      "result_pick_title": "从屏幕取色",
+      "result_pick_subtitle": "按回车开始取色",
+      "action_pick_color": "取色",
+
+      "action_copy": "复制",
+      "action_favorite": "收藏",
+      "action_unfavorite": "取消收藏",
+      "action_edit_keywords": "编辑关键字",
+      "action_remove_history": "从历史移除",
+
+      "keyword_label": "关键字",
+      "keyword_tooltip": "用逗号分隔关键字，便于搜索（例如：red, primary）",
+
+      "subtitle_click_copy": "点击复制",
+      "subtitle_keywords_prefix": "关键字：",
+
+      "empty_no_match": "没有匹配的颜色",
+      "empty_no_colors": "暂无颜色",
+      "empty_pick_hint": "使用 'color pick' 从屏幕取色",
+
+      "unknown_command_prefix": "未知命令：",
+      "unknown_command_hint": "试试 'color pick' 或直接输入 'color'",
+
+      "notify_copied_prefix": "已复制：",
+      "notify_picked_prefix": "已取色：",
+      "notify_copy_failed_prefix": "复制失败："
+    }
+  }
 }
