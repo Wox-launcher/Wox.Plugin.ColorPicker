@@ -114,44 +114,6 @@ async function ensureExecutable(binPath: string): Promise<void> {
   }
 }
 
-async function copyToClipboard(text: string): Promise<void> {
-  const platform = process.platform
-
-  if (platform === "win32") {
-    await new Promise<void>((resolve, reject) => {
-      const p = spawn("clip")
-      p.on("error", reject)
-      p.on("close", code => (code === 0 ? resolve() : reject(new Error(`clip exited with ${code}`))))
-      p.stdin.write(text)
-      p.stdin.end()
-    })
-    return
-  }
-
-  if (platform === "darwin") {
-    await new Promise<void>((resolve, reject) => {
-      const p = spawn("pbcopy")
-      p.on("error", reject)
-      p.on("close", code => (code === 0 ? resolve() : reject(new Error(`pbcopy exited with ${code}`))))
-      p.stdin.write(text)
-      p.stdin.end()
-    })
-    return
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    const p = spawn("sh", ["-lc", "command -v wl-copy >/dev/null 2>&1 && wl-copy || xclip -selection clipboard"], {
-      stdio: ["pipe", "ignore", "pipe"]
-    })
-    let stderr = ""
-    p.stderr.on("data", d => (stderr += String(d)))
-    p.on("error", reject)
-    p.on("close", code => (code === 0 ? resolve() : reject(new Error(stderr || `clipboard exited with ${code}`))))
-    p.stdin.write(text)
-    p.stdin.end()
-  })
-}
-
 function matchesTerms(color: ColorHex, keywords: string[], terms: string[]): boolean {
   if (terms.length === 0) return true
   const colorLower = color.toLowerCase()
@@ -262,7 +224,13 @@ export const plugin: Plugin = {
                 const updatedColors = filteredColors.slice(0, 50)
                 await saveColorHistory(ctx, updatedColors)
 
-                await api.Notify(ctx, `i18n:notify_picked_prefix${normalized}`)
+                await api.Copy(ctx, {
+                  type: "text",
+                  text: normalized
+                })
+
+                const notifyPickedPrefix = await api.GetTranslation(ctx, `notify_picked_prefix`)
+                await api.Notify(ctx, `${notifyPickedPrefix}${normalized}`)
                 await api.HideApp(ctx)
               }
             } satisfies ExecuteResultAction
@@ -276,7 +244,7 @@ export const plugin: Plugin = {
     const terms = query.Search.trim().toLowerCase().split(/\s+/).filter(Boolean)
     const favoriteSet = new Set(favorites)
 
-    const buildColorResult = (color: ColorHex, group: string, canDeleteFromHistory: boolean): Result => {
+    const buildColorResult = async (color: ColorHex, group: string, canDeleteFromHistory: boolean): Promise<Result> => {
       const keywords = keywordMap[color] || []
       const keywordText = keywords.join(", ")
       const isFavorite = favoriteSet.has(color)
@@ -286,12 +254,10 @@ export const plugin: Plugin = {
         Name: "i18n:action_copy",
         IsDefault: true,
         Action: async () => {
-          try {
-            await copyToClipboard(color)
-            await api.Notify(ctx, `i18n:notify_copied_prefix${color}`)
-          } catch (e) {
-            await api.Notify(ctx, `i18n:notify_copy_failed_prefix${String(e)}`)
-          }
+          await api.Copy(ctx, {
+            type: "text",
+            text: color
+          })
         }
       }
 
@@ -353,10 +319,12 @@ export const plugin: Plugin = {
         })
       }
 
+      const subtitleKeywordsPrefix = await api.GetTranslation(ctx, `subtitle_keywords_prefix`)
+
       return {
         Id: `color:${color}`,
         Title: color,
-        SubTitle: keywords.length > 0 ? `i18n:subtitle_keywords_prefix${keywordText}` : "i18n:subtitle_click_copy",
+        SubTitle: keywords.length > 0 ? `${subtitleKeywordsPrefix}${keywordText}` : "i18n:subtitle_click_copy",
         Icon: colorIcon(color),
         Group: group,
         GroupScore: group === GROUP_FAVORITES ? 100 : 10,
@@ -364,12 +332,14 @@ export const plugin: Plugin = {
       }
     }
 
-    const favoriteResults = favorites.filter(c => matchesTerms(c, keywordMap[c] || [], terms)).map(c => buildColorResult(c, GROUP_FAVORITES, history.includes(c)))
+    const favoriteResults = await Promise.all(favorites.filter(c => matchesTerms(c, keywordMap[c] || [], terms)).map(c => buildColorResult(c, GROUP_FAVORITES, history.includes(c))))
 
-    const historyResults = history
-      .filter(c => !favoriteSet.has(c))
-      .filter(c => matchesTerms(c, keywordMap[c] || [], terms))
-      .map(c => buildColorResult(c, GROUP_HISTORY, true))
+    const historyResults = await Promise.all(
+      history
+        .filter(c => !favoriteSet.has(c))
+        .filter(c => matchesTerms(c, keywordMap[c] || [], terms))
+        .map(c => buildColorResult(c, GROUP_HISTORY, true))
+    )
 
     const allResults = [...favoriteResults, ...historyResults]
 

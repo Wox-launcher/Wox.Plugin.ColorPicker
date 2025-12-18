@@ -1,6 +1,6 @@
 {
   "name": "color-picker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "build": "pnpm clean && ncc build src/index.ts -o dist && babel dist --out-dir dist && node -e \"const fs=require('fs');const path=require('path');const items=['images','plugin.json','bin'];for(const item of items){const from=path.join(__dirname,item);if(!fs.existsSync(from))continue;const to=path.join(__dirname,'dist',item);const stat=fs.statSync(from);fs.cpSync(from,to,{recursive:stat.isDirectory()});}const macBin=path.join(__dirname,'dist','bin','color_picker_macos');try{if(fs.existsSync(macBin))fs.chmodSync(macBin,0o755);}catch(e){}\"",
     "package": "pnpm build && cd dist && zip -r ../wox.plugin.colorpicker.wox *.js *.json images bin && cd ..",
@@ -30,6 +30,6 @@
     "typescript-eslint": "^8.45.0"
   },
   "dependencies": {
-    "@wox-launcher/wox-plugin": "^0.0.98"
+    "@wox-launcher/wox-plugin": "^0.0.100"
   }
 }
